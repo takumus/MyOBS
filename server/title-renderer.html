@@ -3,10 +3,25 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
         <script>
-            var socket = io.connect();
-            socket.on("data", function(data) {
-                document.getElementById("title").innerText = data.title;
-            })
+            window.addEventListener("load", function() {
+                var titleElm = document.getElementById("title");
+                var socket = io.connect();
+                var titleArr = [];
+                var title = "";
+                var id = 0;
+                socket.on("data", function(data) {
+                    titleArr = data.title.split("");
+                    title = "";
+                    id = 0;
+                });
+                setInterval(function() {
+                    if (id < titleArr.length) {
+                        title += titleArr[id];
+                        id ++;
+                        titleElm.innerText = title;
+                    }
+                }, 200);
+            });
         </script>
         <style>
             html {
