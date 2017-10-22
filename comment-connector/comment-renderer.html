@@ -1,0 +1,133 @@
+<html>
+        <head>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+            <script>
+                var socket = io.connect();
+                var currentComments = [];
+                socket.on("data", function(comments) {
+                    addComments(comments);
+                });
+                var cc = 0;
+                window.addEventListener("click", function() {
+                    var msg = "";
+                    cc ++;
+                    for(var i = 0 ; i < Math.random() * 80; i ++) {
+                        msg += "message";
+                    }
+                    addComments([{
+                        icon: "file:///Users/takumus/Desktop/Untitled.gif",
+                        author: "takumus",
+                        message: cc + ":" + msg
+                    }]);
+                });
+                function addComments(comments) {
+                    comments.forEach(function(comment) {
+                        currentComments.push(addComment(comment));
+                    });
+                    updateComments();
+                }
+                function updateComments() {
+                    var sh = window.innerHeight;
+                    var mh = 0;
+                    var removeCount = 0;
+                    for (var i = currentComments.length - 1; i >= 0; i --) {
+                        var elem = currentComments[i].parent;
+                        mh += elem.getBoundingClientRect().height;
+                        if (sh < mh) {
+                            removeCount = i + 1;
+                            break;
+                        }
+                    }
+                    currentComments.splice(0, removeCount).forEach(function(e){
+                        e.parent.remove();
+                    });
+                    var y = 0;
+                    for (var i = currentComments.length - 1; i >= 0; i --) {
+                        var elem = currentComments[i].parent;
+                        elem.style.opacity = (i / (currentComments.length - 1)) * 0.8 + 0.2;
+                        elem.style.bottom = y + "px";
+                        y += elem.getBoundingClientRect().height;
+                    }
+                }
+                function update() {
+                    for (var i = 0; i < currentComments.length; i ++) {
+                        var c = currentComments[i];
+                        var r = Math.cos(c.iconRO) * 30;
+                        c.iconRO += c.iconRS;
+                        c.icon.style.transform = "rotate(" + r + "deg)";
+                    }
+                    requestAnimationFrame(update);
+                }
+                update();
+                function addComment(comment) {
+                    var parentElem = document.createElement("div");
+                    var iconElem = document.createElement("div");
+                    var contentElem = document.createElement("div");
+                    var nameElem = document.createElement("span");
+                    var messageElem = document.createElement("span");
+                    parentElem.className = "message";
+                    iconElem.className = "icon";
+                    contentElem.className = "content";
+                    nameElem.className = "name";
+                    contentElem.appendChild(nameElem);
+                    contentElem.appendChild(messageElem);
+                    parentElem.appendChild(iconElem);
+                    parentElem.appendChild(contentElem);
+    
+                    iconElem.style.backgroundImage = "url(" + comment.icon + ")";
+                    nameElem.innerText = comment.author + " : ";
+                    messageElem.innerText = comment.message;
+    
+                    //document.body.insertBefore(parentElem, document.body.firstChild);
+                    document.body.appendChild(parentElem);
+                    return {
+                        parent: parentElem,
+                        icon: iconElem,
+                        name: nameElem,
+                        iconRO: Math.random() * Math.PI,
+                        iconRS: Math.random() * 0.08 + 0.06
+                    };
+                }
+            </script>
+            <style>
+                html, body {
+                    padding: 0px;
+                    margin: 0px;
+                    width: 100%;
+                    height: 100%;
+                    vertical-align: bottom;
+                    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI","Noto Sans Japanese","ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
+                }
+                .message {
+                    position: fixed;
+                    padding: 10px;
+                    overflow: hidden;
+                    display: flex;
+                    align-items: center;
+                }
+                .message .icon {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 15px;
+                    box-shadow:0px 0px 5px 3px #000;
+                    background-size: 30px;
+                    background-position-x: center;
+                    background-position-y: center;
+                }
+                .message .content {
+                    flex: 1;
+                    overflow: hidden;
+                    padding-left: 10px;
+                    font-size: 25px;
+                    color: #FFF;
+                    word-break: break-all;
+                    text-shadow: -2px -2px #000000,-2px -1px #000000,-2px 0px #000000,-2px 1px #000000,-2px 2px #000000,-1px -2px #000000,-1px -1px #000000,-1px 0px #000000,-1px 1px #000000,-1px 2px #000000,0px -2px #000000,0px -1px #000000,0px 0px #000000,0px 1px #000000,0px 2px #000000,1px -2px #000000,1px -1px #000000,1px 0px #000000,1px 1px #000000,1px 2px #000000,2px -2px #000000,2px -1px #000000,2px 0px #000000,2px 1px #000000,2px 2px #000000;
+                }
+                .message .name {
+                    font-weight: bold;
+                }
+            </style>
+        </head>
+        <body>
+        </body>
+    </html>

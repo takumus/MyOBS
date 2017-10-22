@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script>
+            var socket = io.connect();
+            socket.on("data", function(data) {
+            });
+            window.addEventListener("click", () => {
+                socket.emit("data", {type: "title", title: "aaaaasa"});
+            });
+        </script>
+    </head>
+    <body>
+        hello
+    </body>
+</html>
