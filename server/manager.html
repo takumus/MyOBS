@@ -5,12 +5,15 @@
             var socket = io.connect();
             socket.on("data", function(data) {
             });
-            window.addEventListener("click", () => {
-                socket.emit("data", {type: "title", title: "aaaaasa"});
-            });
+            function updateTitle() {
+                socket.emit("data", {
+                    type: "title",
+                    title: document.getElementById("title")
+                });
+            }
         </script>
     </head>
     <body>
-        hello
+        タイトル：<input type="text" id="title"><button onclick="updateTitle()"></button>
     </body>
 </html>
