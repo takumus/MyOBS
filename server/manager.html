@@ -8,7 +8,7 @@
             function updateTitle() {
                 socket.emit("data", {
                     type: "title",
-                    title: document.getElementById("title")
+                    title: document.getElementById("title").value
                 });
             }
         </script>
