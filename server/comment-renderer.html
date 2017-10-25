@@ -45,7 +45,7 @@
                 var y = 0;
                 for (var i = currentComments.length - 1; i >= 0; i --) {
                     var elem = currentComments[i].parent;
-                    elem.style.opacity = (i / (currentComments.length - 1)) * 0.8 + 0.2;
+                    elem.style.opacity = (i / (currentComments.length - 1)) * 0.6 + 0.4;
                     elem.style.bottom = y + "px";
                     y += elem.getBoundingClientRect().height;
                 }
@@ -79,14 +79,13 @@
                 nameElem.innerText = comment.author + " : ";
                 messageElem.innerText = comment.message;
 
-                //document.body.insertBefore(parentElem, document.body.firstChild);
                 document.body.appendChild(parentElem);
                 return {
                     parent: parentElem,
                     icon: iconElem,
                     name: nameElem,
                     iconRO: Math.random() * Math.PI,
-                    iconRS: Math.random() * 0.08 + 0.06
+                    iconRS: Math.random() * 0.16 + 0.08
                 };
             }
         </script>
