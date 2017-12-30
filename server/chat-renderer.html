@@ -8,22 +8,9 @@
             socket.on("data", function(comments) {
                 addComments(comments);
             });
-            var cc = 0;
-            window.addEventListener("click", function() {
-                var msg = "";
-                cc ++;
-                for(var i = 0 ; i < Math.random() * 80; i ++) {
-                    msg += "message";
-                }
-                addComments([{
-                    icon: "file:///Users/takumus/Desktop/Untitled.gif",
-                    author: "takumus",
-                    message: cc + ":" + msg
-                }]);
-            });
             function addComments(comments) {
                 comments.forEach(function(comment) {
-                    currentComments.push(addComment(comment));
+                    currentComments.push(createComment(comment));
                 });
                 updateComments();
             }
@@ -60,7 +47,7 @@
                 requestAnimationFrame(update);
             }
             update();
-            function addComment(comment) {
+            function createComment(comment) {
                 var parentElem = document.createElement("div");
                 var iconElem = document.createElement("div");
                 var contentElem = document.createElement("div");
@@ -74,16 +61,13 @@
                 contentElem.appendChild(messageElem);
                 parentElem.appendChild(iconElem);
                 parentElem.appendChild(contentElem);
-
-                iconElem.style.backgroundImage = "url(" + comment.icon + ")";
-                nameElem.innerText = comment.author + " : ";
+                iconElem.style.backgroundImage = "url(" + comment.author.icon + ")";
+                nameElem.innerText = comment.author.name + " : ";
                 messageElem.innerText = comment.message;
-
                 document.body.appendChild(parentElem);
                 return {
                     parent: parentElem,
                     icon: iconElem,
-                    name: nameElem,
                     iconRO: Math.random() * Math.PI,
                     iconRS: Math.random() * 0.16 + 0.08
                 };
