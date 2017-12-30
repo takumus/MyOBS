@@ -1,3 +1,4 @@
+const config = require("./config");
 const google = require("googleapis");
 const fs = require("fs");
 const http = require("http");
@@ -6,7 +7,7 @@ const socketio = require("socket.io");
 const videoId = process.argv[2];
 const youtube = google.youtube({
     version: "v3",
-    auth: "AIzaSyBVjBaD-aIVPugo_IlkKE2x2KmkfoJIEi4"
+    auth: config.auth
 });
 getLiveChatId(videoId);
 function getLiveChatId(videoId) {
@@ -62,7 +63,7 @@ let chatRendererSocket = null;
 const chatRendererServer = http.createServer((req, res) => {
     res.writeHead(200, {"Content-Type" : "text/html"});
     res.end(fs.readFileSync(__dirname + "/chat-renderer.html", "utf-8"));
-}).listen(3001);
+}).listen(config.port);
 socketio.listen(chatRendererServer).sockets.on("connection", function(socket) {
     chatRendererSocket = socket;
 });
