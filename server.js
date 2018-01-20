@@ -1,15 +1,30 @@
 const config = require("./config");
 const google = require("googleapis");
 const fs = require("fs");
-const http = require("http");
-const socketio = require("socket.io");
+const app = require('express')();
+const http = require("http").createServer(app);
+const socketio = require("socket.io").listen(http);
 
-const videoId = process.argv[2];
 const youtube = google.youtube({
     version: "v3",
     auth: config.auth
 });
-getLiveChatId(videoId);
+getLive();
+function getLive() {
+    youtube.search.list({
+        part: "snippet",
+        channelId: config.channelId,
+        eventType: "live",
+        type: "video"
+    }, (err, data) => {
+        if (data.items.length < 1) return;
+        const live = data.items[0];
+        const id = live.id.videoId;
+        const title = live.snippet.title;
+        console.log(`配信を検出: [${title}]{${id}}`);
+        getLiveChatId(id);
+    })
+}
 function getLiveChatId(videoId) {
     youtube.videos.list({
         part: "liveStreamingDetails",
@@ -18,6 +33,7 @@ function getLiveChatId(videoId) {
         if (err) console.error(err);
         if (data) {
             const liveChatId = data.items[0].liveStreamingDetails.activeLiveChatId
+            console.log(`ライブチャットを検出: {${liveChatId}}`);
             startPolling(liveChatId);
         }
     })
@@ -47,11 +63,15 @@ function startPolling(liveChatId) {
                         message: item.snippet.displayMessage
                     }
                 });
-                console.log(messages);
                 if (messages.length > 0) {
-                    sendToChatRenderer(messages)
+                    const timer = setInterval(() => {
+                        if (messages.length < 1) {
+                            clearInterval(timer);
+                            request();
+                        }
+                        sendToChatRenderer([messages.shift()]);
+                    }, data.pollingIntervalMillis / messages.length);
                 }
-                setTimeout(request, Number(data.pollingIntervalMillis))
             }
         })
     }
@@ -59,14 +79,26 @@ function startPolling(liveChatId) {
 }
 
 //comment renderer
-let chatRendererSocket = null;
-const chatRendererServer = http.createServer((req, res) => {
-    res.writeHead(200, {"Content-Type" : "text/html"});
-    res.end(fs.readFileSync(__dirname + "/chat-renderer.html", "utf-8"));
-}).listen(config.port);
-socketio.listen(chatRendererServer).sockets.on("connection", function(socket) {
-    chatRendererSocket = socket;
+const rendererSockets = {};
+http.listen(config.port);
+app.get("/up", (req, res) => {
+    res.writeHead(200);
+    res.end();
+})
+app.get("/renderer", (req, res) => {
+    res.sendFile(__dirname + "/chat-renderer.html");
+});
+app.get("/renderer-wrapper", (req, res) => {
+    res.sendFile(__dirname + "/chat-renderer-wrapper.html");
+});
+socketio.on("connection", (socket) => {
+    rendererSockets[socket.id] = socket;
+    socket.on("disconnect", () => {
+        delete rendererSockets[socket.id];
+    })
 });
 function sendToChatRenderer(data) {
-    if (chatRendererSocket) chatRendererSocket.emit("data", data);
+    Object.keys(rendererSockets).forEach((key) => {
+        rendererSockets[key].emit("data", data);
+    });
 }

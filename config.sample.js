@@ -1,4 +1,5 @@
 module.exports = {
     auth: "XXXXXXX",
-    port: 3001
+    port: 7519,
+    channelId: "XXXXX"
 }
