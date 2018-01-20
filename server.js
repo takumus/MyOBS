@@ -9,7 +9,20 @@ const youtube = google.youtube({
     version: "v3",
     auth: config.auth
 });
-getLive();
+getChannel();
+function getChannel() {
+    youtube.channels.list({
+        part: "snippet",
+        id: config.channelId
+    }, (err, data) => {
+        if (data.items.length < 1) {
+            console.log("チャンネルidが間違い");
+            return;
+        }
+        console.log(`チャンネルを検出: [${data.items[0].snippet.title}]`);
+        getLive();
+    });
+}
 function getLive() {
     youtube.search.list({
         part: "snippet",
@@ -17,7 +30,10 @@ function getLive() {
         eventType: "live",
         type: "video"
     }, (err, data) => {
-        if (data.items.length < 1) return;
+        if (data.items.length < 1) {
+            console.log(`${"a"}現在配信していない`);
+            return;
+        }
         const live = data.items[0];
         const id = live.id.videoId;
         const title = live.snippet.title;
@@ -49,7 +65,7 @@ function startPolling(liveChatId) {
         }, (err, data) => {
             if (err) {
                 console.error("Error: " + err);
-                setTimeout(request, 3000)
+                setTimeout(request, 3000);
             }
             if (data) {
                 nextPageToken = data.nextPageToken
