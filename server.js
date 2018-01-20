@@ -31,7 +31,7 @@ function getLive() {
         type: "video"
     }, (err, data) => {
         if (data.items.length < 1) {
-            console.log(`${"a"}現在配信していない`);
+            console.log(`現在配信していない`);
             return;
         }
         const live = data.items[0];
