@@ -1,7 +1,8 @@
 const config = require("./config");
 const google = require("googleapis");
 const fs = require("fs");
-const app = require('express')();
+const express = require('express');
+const app = express();
 const http = require("http").createServer(app);
 const socketio = require("socket.io").listen(http);
 
@@ -97,15 +98,10 @@ function startPolling(liveChatId) {
 //comment renderer
 const rendererSockets = {};
 http.listen(config.port);
+app.use('/renderer', express.static(__dirname + '/renderer'));
 app.get("/up", (req, res) => {
     res.writeHead(200);
     res.end();
-})
-app.get("/renderer", (req, res) => {
-    res.sendFile(__dirname + "/chat-renderer.html");
-});
-app.get("/renderer-wrapper", (req, res) => {
-    res.sendFile(__dirname + "/chat-renderer-wrapper.html");
 });
 socketio.on("connection", (socket) => {
     rendererSockets[socket.id] = socket;

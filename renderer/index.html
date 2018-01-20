@@ -7,11 +7,11 @@
                 var upped = true;
                 function reload() {
                     console.log("reload renderer");
-                    rendererFrame.src = "/renderer?time=" + new Date().getTime();
+                    rendererFrame.src = "./renderer.html?time=" + new Date().getTime();
                 }
                 function checkServer() {
                     var xhr = new XMLHttpRequest();
-                    xhr.open("GET", "http://localhost:7519/up");
+                    xhr.open("GET", "/up");
                     xhr.onload = function (e) {
                         if (!upped) reload();
                         upped = true;
