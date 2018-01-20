@@ -88,6 +88,8 @@ function startPolling(liveChatId) {
                         }
                         sendToChatRenderer([messages.shift()]);
                     }, data.pollingIntervalMillis / messages.length);
+                }else {
+                    setTimeout(request, data.pollingIntervalMillis);
                 }
             }
         })
