@@ -4,5 +4,5 @@
 `auth`をGoogle APIのキーにする。  
 `channelId`を自分のチャンネルのURLのid部分にする。  
 `npm install`して`node .`する。  
-`localhost:7519/renderer-wrapper/`を`BrowserSource`で`OBS`に設定。  
+`localhost:7519/renderer/`を`BrowserSource`で`OBS`に設定。  
 その動画のコメントがレンダリングされる。
