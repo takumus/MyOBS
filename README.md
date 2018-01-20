@@ -2,6 +2,7 @@
 ## 使い方。
 `config.sample.js`を`config.js`へ変更。  
 `auth`をGoogle APIのキーにする。  
-`npm install`して`node . 放送の動画ID`する。  
-`localhost:3001`を`BrowserSource`で`OBS`に設定。  
-その動画のコメントがレンダリングされます。
+`channelId`を自分のチャンネルのURLのid部分にする。  
+`npm install`して`node .`する。  
+`localhost:7519/renderer-wrapper/`を`BrowserSource`で`OBS`に設定。  
+その動画のコメントがレンダリングされる。
