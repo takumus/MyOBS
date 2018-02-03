@@ -5,7 +5,7 @@ const express = require('express');
 const app = express();
 const http = require("http").createServer(app);
 const socketio = require("socket.io").listen(http);
-
+const prompt = require('prompt-sync')();
 const youtube = google.youtube({
     version: "v3",
     auth: config.auth
@@ -33,6 +33,10 @@ function getLive() {
     }, (err, data) => {
         if (data.items.length < 1) {
             console.log(`現在配信していない`);
+            const url = prompt("そういう時は、ここに動画URLを入れて > ");
+            const id = /v=([a-zA-Z0-9]+)/g.exec(url);
+            console.log(`動画id : [${id[1]}]`);
+            getLiveChatId(id[1]);
             return;
         }
         const live = data.items[0];
