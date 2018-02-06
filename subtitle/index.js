@@ -31,6 +31,7 @@ transcripterApp.use(bodyParser.json());
 recorderApp.get("/recorder", function(req, res){
     const body = fs.readFileSync("./www/recorder.html").toString().replace("${port}", config.rendererPort);
     res.status(200);
+    res.set('text/html; charset=utf-8');
     res.end(body);
 });
 transcripterApp.post("/receiver", function(req, res){
