@@ -1,0 +1,67 @@
+<html> 
+<head>
+    <meta charset="UTF-8">
+    <script>
+        var received = false;
+        var rec;
+        function beginRec() {
+            // 前のを捨てる。
+            if (rec) rec.stop();
+            received = false;
+            rec = new webkitSpeechRecognition();
+            rec.lang = "ja";
+            rec.continuous = true;
+            rec.interimResults = true;
+            rec.addEventListener("soundstart", function() {
+                // 録音中。
+                console.log("recording...");
+            });
+            rec.addEventListener("speechend", function() {
+                console.log("end sound!");
+                // スピーチ終了時もう一回。
+                beginRec();
+            });
+            rec.addEventListener("error", function() {
+                console.log("timeout!");
+                // 何も受信せずエラーしたらもう一回。
+                if(!received) beginRec();
+            });
+            rec.addEventListener("result", function(event) {
+                var transcript = "";
+                for (var i = 0; i < event.results.length; i++) {
+                    var result = event.results[i];
+                    var chunk = result[0].transcript;
+                    if (result.isFinal) {
+                        // finalであればchunkが確定　＆　送信
+                        sendTranscript(chunk, true);
+                        beginRec();
+                        return;
+                    }else {
+                        // でなければchunkを順番に連結。
+                        transcript += chunk;
+                        received = true;
+                    }
+                }
+                // 送信
+                sendTranscript(transcript, false);
+            });
+            rec.start();
+        }
+        function sendTranscript(transcript, final) {
+            // obsへ
+            console.log(transcript, final);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', "http://localhost:${port}/receiver", true);
+            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                value: encodeURI(transcript),
+                time: new Date().getTime(),
+                final: final
+            }));
+        }
+    </script> 
+</head>
+<body>
+    <input type="button" value="start" onclick="beginRec()">
+</body>
+</html>
