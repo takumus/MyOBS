@@ -4,12 +4,14 @@
     <script>
         var received = false;
         var rec;
+        var lang = location.search.split("?")[1] || "ja";
+        console.log(lang);
         function beginRec() {
             // 前のを捨てる。
             if (rec) rec.stop();
             received = false;
             rec = new webkitSpeechRecognition();
-            rec.lang = "ja";
+            rec.lang = lang;
             rec.continuous = true;
             rec.interimResults = true;
             rec.addEventListener("soundstart", function() {
